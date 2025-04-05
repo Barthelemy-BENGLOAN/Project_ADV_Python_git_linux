@@ -741,4 +741,4 @@ def update_graphs(n, start_date, end_date, period):
     return candlestick, volatility, daily_report
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=True)
