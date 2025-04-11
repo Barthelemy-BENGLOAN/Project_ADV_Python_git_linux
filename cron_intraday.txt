@@ -1,4 +1,5 @@
 #cron tab pour effuctuer un update toutes les 5 minutes 
-*/5 * * * * /home/bart/Project_ADV_Python_git_linux/scrape_intraday.sh
+*/5 * * * * /app/scrape_intraday.sh
+
 
 
