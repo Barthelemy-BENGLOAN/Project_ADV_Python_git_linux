@@ -50,9 +50,3 @@ done
 
 echo "Les données ont été enregistrées dans data_output.csv"
 
-cd /home/ubuntu/Project_ADV_Python_git_linux
-git add data_output.csv
-git commit -m "Mise à jour des données du CAC40"
-git push origin main
-
-echo "Les modifications ont été poussées vers GitHub."
