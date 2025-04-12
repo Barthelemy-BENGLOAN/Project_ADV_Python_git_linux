@@ -11,10 +11,11 @@ from pathlib import Path
 import base64
 
 # Définition des chemins
-# Utilisation d'un chemin absolu ou relatif vers le répertoire où les fichiers sont stockés sur le serveur
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Répertoire du fichier dashboard.py
-DATA_FILE = os.path.join(BASE_DIR, 'data_history.csv')
-REALTIME_DATA_FILE = os.path.join(BASE_DIR, 'data_output.csv')
+BASE_DIR = Path(__file__).resolve().parent
+DATA_FILE = BASE_DIR / 'data_history.csv'
+REALTIME_DATA_FILE = BASE_DIR / 'data_output.csv'
+LOGO_PATH = BASE_DIR / 'ESILV.png'
+
 
 
 # Encodage du logo en base64
