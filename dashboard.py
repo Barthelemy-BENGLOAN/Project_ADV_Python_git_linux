@@ -11,7 +11,8 @@ from pathlib import Path
 import base64
 
 # Définition des chemins
-BASE_DIR = os.getcwd()  # Utiliser le répertoire courant où le script est exécuté
+# Utilisation d'un chemin absolu ou relatif vers le répertoire où les fichiers sont stockés sur le serveur
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Répertoire du fichier dashboard.py
 DATA_FILE = os.path.join(BASE_DIR, 'data_history.csv')
 REALTIME_DATA_FILE = os.path.join(BASE_DIR, 'data_output.csv')
 
