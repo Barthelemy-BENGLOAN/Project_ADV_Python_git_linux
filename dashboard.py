@@ -16,6 +16,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Répertoire du fichier 
 DATA_FILE = os.path.join(BASE_DIR, 'data_history.csv')
 REALTIME_DATA_FILE = os.path.join(BASE_DIR, 'data_output.csv')
 
+
 # Encodage du logo en base64
 def encode_image(image_path):
     with open(image_path, 'rb') as f:
