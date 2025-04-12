@@ -1,78 +1,57 @@
 #!/bin/bash
 
-# Configuration
-LOG_FILE="scraping.log"
-DATA_DIR="$(dirname "$0")"
-BASE_URL="https://www.boursedirect.fr/api/instrument/history/XPAR/PX1/EUR"
-
-# Fonction de logging
-log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
-}
-
-# Création du dossier de données si nécessaire
-mkdir -p "$DATA_DIR"
-
-# Vérification de la connexion internet
-if ! ping -c 1 8.8.8.8 &> /dev/null; then
-    log "ERREUR: Pas de connexion internet"
-    exit 1
-fi
-
-# Calcul des dates
-END_DATE=$(date +%s%N | cut -b1-13)
-START_DATE=$(date -d "2000-01-01" "+%s%N" | cut -b1-13)
-
-# GET request avec HTTP headers pour simuler un navigateur
-log "Tentative de connexion à l'API..."
-response=$(curl -s -H "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0" \
-    "$BASE_URL?start=$START_DATE&end=$END_DATE&period=1d")
+# CAC40 API URL
+URL="https://www.boursedirect.fr/api/instrument/intraday/XPAR/PX1/EUR"
+# GET request with HTTP headers to simulate a browser
+response=$(curl -s -H "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0" $URL)
 
 if [[ $? -ne 0 ]]; then
-    log "ERREUR: Échec de la connexion à l'API"
+  echo "API connection error"  #check if the request was successful
+  exit 1
+fi
+
+if [[ "$response" == *"403 Forbidden"* ]]; then  #Check if the server returns a 403 error
+  echo "Erreur 403 : Accès interdit à l'API. Vérifiez les permissions ou les en-têtes de la requête."
+  exit 1
+fi
+
+#Save raw json to file for verification
+echo "$response" > raw_data.json
+
+# Extraction using jq instead of regex for better compatibility
+echo "Date, OpenPrice, ClosePrice, High, Low" > data_output.csv
+
+# Check if jq is installed
+if ! command -v jq &> /dev/null; then
+    echo "jq is required but not installed. Please install it using 'brew install jq'"
     exit 1
 fi
 
-if [[ "$response" == *"403 Forbidden"* ]]; then
-    log "ERREUR: Accès interdit à l'API"
-    exit 1
-fi
+# Use jq to extract and format the data (works on both Linux and macOS)
+jq -r '.current[] | select(.Date != null and .OpenPrice != null) | [.Date, .OpenPrice, .ClosePrice, .High, .Low] | @csv' raw_data.json > temp_data.csv
 
-# Sauvegarde des données brutes
-log "Sauvegarde des données brutes..."
-echo "$response" > "$DATA_DIR/raw_data.json"
+# Process the data
+while IFS=, read -r date openPrice closePrice highPrice lowPrice; do
+    # Remove quotes if present
+    date=${date//\"/}
+    openPrice=${openPrice//\"/}
+    closePrice=${closePrice//\"/}
+    highPrice=${highPrice//\"/}
+    lowPrice=${lowPrice//\"/}
+    
+    # Format date (compatible with macOS)
+    formattedDate=$(date -r "$date" +"%Y-%m-%d %H:%M:%S")
+    
+    # Get hour in HHMM format
+    hourCheck=$(date -r "$date" +%H%M)
+    
+    # Only include data before or at 17:30
+    if [ "$hourCheck" -le "1730" ]; then
+        echo "$formattedDate, $openPrice, $closePrice, $highPrice, $lowPrice" >> data_output.csv
+    fi
+done < temp_data.csv
 
-# Vérification du format JSON
-if ! jq empty "$DATA_DIR/raw_data.json" 2>/dev/null; then
-    log "ERREUR: Les données reçues ne sont pas au format JSON valide"
-    exit 1
-fi
+# Clean up temp file
+rm temp_data.csv
 
-# Créer le fichier CSV avec les en-têtes
-echo "Date,OpenPrice,ClosePrice,High,Low" > "$DATA_DIR/data_history.csv"
-
-# Traiter les données JSON et les convertir en CSV
-cat "$DATA_DIR/raw_data.json" | jq -r '.current[] | select(.Date != null and .OpenPrice != null) | [.Date, .OpenPrice, .ClosePrice, .High, .Low] | @csv' > "$DATA_DIR/temp.csv"
-
-# Formater les dates et écrire dans le fichier final
-while IFS=, read -r timestamp open close high low; do
-    # Convertir le timestamp en date lisible
-    date=$(date -d "@${timestamp}" "+%Y-%m-%d")
-    echo "$date,$open,$close,$high,$low" >> "$DATA_DIR/data_history.csv"
-done < "$DATA_DIR/temp.csv"
-
-# Supprimer le fichier temporaire
-rm "$DATA_DIR/temp.csv"
-
-# Compter le nombre de lignes de données
-data_lines=$(wc -l < "$DATA_DIR/data_history.csv")
-data_lines=$((data_lines - 1))  # Soustraire la ligne d'en-tête
-log "Nombre de lignes de données: \t$data_lines"
-
-# Vérification finale
-if [[ -s "$DATA_DIR/data_history.csv" ]]; then
-    log "SUCCÈS: Données sauvegardées avec succès"
-else
-    log "ERREUR: Aucune donnée n'a été extraite"
-    exit 1
-fi
+echo "The data have been saved in data_output.csv"
