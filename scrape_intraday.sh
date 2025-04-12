@@ -21,7 +21,7 @@ fi
 
 # Calcul des dates
 END_DATE=$(date +%s%N | cut -b1-13)
-START_DATE=$(date -j -f "%Y-%m-%d" "2000-01-01" "+%s%N" | cut -b1-13)
+START_DATE=$(date -d "2000-01-01" "+%s%N" | cut -b1-13)
 
 # GET request avec HTTP headers pour simuler un navigateur
 log "Tentative de connexion à l'API..."
@@ -57,7 +57,7 @@ cat "$DATA_DIR/raw_data.json" | jq -r '.current[] | select(.Date != null and .Op
 # Formater les dates et écrire dans le fichier final
 while IFS=, read -r timestamp open close high low; do
     # Convertir le timestamp en date lisible
-    date=$(date -r "${timestamp}" "+%Y-%m-%d")
+    date=$(date -d "@${timestamp}" "+%Y-%m-%d")
     echo "$date,$open,$close,$high,$low" >> "$DATA_DIR/data_history.csv"
 done < "$DATA_DIR/temp.csv"
 
