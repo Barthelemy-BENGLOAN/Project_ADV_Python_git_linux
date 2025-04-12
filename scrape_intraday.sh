@@ -20,10 +20,10 @@ if [[ "$response" == *"403 Forbidden"* ]]; then
 fi
 
 # Sauvegarde des données brutes pour vérification
-echo "$response" > raw_data.json
+echo "$response" > /home/ubuntu/Project_ADV_Python_git_linux/raw_data.json
 
 # Création du fichier CSV de sortie
-echo "Date, OpenPrice, ClosePrice, High, Low" > data_output.csv
+echo "Date, OpenPrice, ClosePrice, High, Low" > /home/ubuntu/Project_ADV_Python_git_linux/data_output.csv
 
 # Extraction des données avec Regex et écriture dans le CSV
 echo "$response" | grep -oP '"Date":\s*\K[0-9]+' | while read -r date; do
@@ -43,10 +43,9 @@ echo "$response" | grep -oP '"Date":\s*\K[0-9]+' | while read -r date; do
     if [ "$hourCheck" -lt "1731" ]; then
         # On écrit la ligne dans le CSV si toutes les valeurs sont présentes et valides
         if [[ -n "$openPrice" && -n "$closePrice" && -n "$highPrice" && -n "$lowPrice" ]]; then
-            echo "$formattedDate, $openPrice, $closePrice, $highPrice, $lowPrice" >> data_output.csv
+            echo "$formattedDate, $openPrice, $closePrice, $highPrice, $lowPrice" >> /home/ubuntu/Project_ADV_Python_git_linux/data_output.csv
         fi
     fi
 done
 
-echo "Les données ont été enregistrées dans data_output.csv"
-
+echo "Les données ont été enregistrées dans /home/ubuntu/Project_ADV_Python_git_linux/data_output.csv"
