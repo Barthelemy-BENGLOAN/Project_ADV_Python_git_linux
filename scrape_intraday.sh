@@ -40,7 +40,7 @@ echo "$response" | grep -oP '"Date":\s*\K[0-9]+' | while read -r date; do
     hourCheck=$(date -d @"$date" +%H%M)
 
     # Exclure toutes les heures >= 17h30 (1730) du CSV
-    if [ "$hourCheck" -lt "1730" ]; then
+    if [ "$hourCheck" -lt "1731" ]; then
         # On écrit la ligne dans le CSV si toutes les valeurs sont présentes et valides
         if [[ -n "$openPrice" && -n "$closePrice" && -n "$highPrice" && -n "$lowPrice" ]]; then
             echo "$formattedDate, $openPrice, $closePrice, $highPrice, $lowPrice" >> data_output.csv
