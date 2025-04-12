@@ -745,5 +745,6 @@ print(f"Chemin vers le fichier des données historiques : {DATA_FILE}")
 print(f"Chemin vers le fichier des données en temps réel : {REALTIME_DATA_FILE}")
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8050)
+    app.run(debug=True, host='0.0.0.0', port=8051)
+
 
