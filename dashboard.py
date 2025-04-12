@@ -11,10 +11,9 @@ from pathlib import Path
 import base64
 
 # Définition des chemins
-BASE_DIR = Path(__file__).resolve().parent
-DATA_FILE = BASE_DIR / 'data_history.csv'
-REALTIME_DATA_FILE = BASE_DIR / 'data_output.csv'
-LOGO_PATH = BASE_DIR / 'ESILV.png'
+BASE_DIR = os.getcwd()  # Utiliser le répertoire courant où le script est exécuté
+DATA_FILE = os.path.join(BASE_DIR, 'data_history.csv')
+REALTIME_DATA_FILE = os.path.join(BASE_DIR, 'data_output.csv')
 
 # Encodage du logo en base64
 def encode_image(image_path):
