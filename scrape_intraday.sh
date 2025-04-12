@@ -1,5 +1,5 @@
 #!/bin/bash
-
+PROJECT_DIR="/home/ubuntu/Project_ADV_Python_git_linux"
 # URL de l'API pour les données du CAC40
 URL="https://www.boursedirect.fr/api/instrument/intraday/XPAR/PX1/EUR"
 export TZ="Europe/Paris"  # Pour définir le fuseau horaire à GMT+2 (France)
