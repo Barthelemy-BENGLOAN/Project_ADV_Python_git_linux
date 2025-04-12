@@ -49,3 +49,20 @@ echo "$response" | grep -oP '"Date":\s*\K[0-9]+' | while read -r date; do
 done
 
 echo "Les données ont été enregistrées dans data_output.csv"
+
+# Étapes pour mettre à jour le dépôt GitHub avec les données
+cd /home/ubuntu/Project_ADV_Python_git_linux  # Assure-toi que ce chemin correspond à ton répertoire Git
+
+# Vérifie l'état de Git
+git status
+
+# Ajouter les fichiers modifiés
+git add data_output.csv
+
+# Commit les changements
+git commit -m "Mise à jour des données à $(date)"
+
+# Pousser les changements vers GitHub (assure-toi d'avoir configuré un dépôt Git local avec la clé SSH)
+git push origin main  # Si ta branche est 'main'. Sinon, adapte le nom de la branche.
+
+echo "Les modifications ont été poussées vers GitHub."
