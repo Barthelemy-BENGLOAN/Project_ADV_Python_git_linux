@@ -40,7 +40,7 @@ while IFS=, read -r date openPrice closePrice highPrice lowPrice; do
     lowPrice=${lowPrice//\"/}
     
     # Format date (compatible with macOS)
-    formattedDate=$(date -r "$date" +"%Y-%m-%d %H:%M:%S")
+    formattedDate=$(date -r "@$date" +"%Y-%m-%d %H:%M:%S")
     
     # Get hour in HHMM format
     hourCheck=$(date -r "$date" +%H%M)
